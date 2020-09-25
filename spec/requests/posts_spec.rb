@@ -36,6 +36,11 @@ RSpec.describe 'Posts', type: :request do
       payload = JSON.parse(response.body)
       expect(payload).not_to be_empty
       expect(payload['id']).to eq(post.id)
+      expect(payload['title']).to eq(post.title)
+      expect(payload['content']).to eq(post.content)
+      expect(payload['author']['name']).to eq(user.name)
+      expect(payload['author']['email']).to eq(user.email)
+      expect(payload['author']['id']).to eq(user.id)
       expect(response).to have_http_status(:ok)
     end
 
