@@ -6,12 +6,26 @@ RSpec.describe 'Posts', type: :request do
   describe 'GET /posts' do
     let!(:user) { create(:user) }
     let!(:posts) { create_list(:post, 10, published: true, user: user) }
-    before { get '/posts' }
 
     it 'should return OK' do
+      get '/posts'
       payload = JSON.parse(response.body)
       expect(payload).not_to be_empty
       expect(response).to have_http_status(:ok)
+    end
+
+    describe 'filters' do
+      let!(:init_post) { create(:published_post, title: 'init_post', user: user) }
+      let!(:last_post) { create(:published_post, title: 'last_post', user: user) }
+
+      it 'should filter posts by title' do
+        get '/posts?search=init_post'
+        payload = JSON.parse(response.body)
+        expect(payload).not_to be_empty
+        expect(payload.size).to eq(1)
+        expect(payload.map { |p| p['id'] }.sort).to eq([init_post.id])
+        expect(response).to have_http_status(:ok)
+      end
     end
   end
 
